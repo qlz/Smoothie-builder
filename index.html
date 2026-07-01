@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Smoothie Builder</title>
+  <style>
+    :root {
+      --bg: #fffdf9;
+      --surface: #ffffff;
+      --surface-2: #faf6ef;
+      --text: #22231f;
+      --muted: #74746c;
+      --line: #e9e2d8;
+      --accent: #ff5f73;
+      --accent-soft: #fff0f2;
+      --sage: #757d5a;
+      --shadow: 0 1px 2px rgba(36, 31, 24, .05);
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+      --space: 8px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { background: var(--bg); }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+
+    button { font: inherit; color: inherit; cursor: pointer; }
+
+    .page {
+      width: min(100%, 430px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: max(14px, env(safe-area-inset-top)) 18px max(20px, env(safe-area-inset-bottom));
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -0.06em;
+      font-weight: 800;
+    }
+
+    .leaf {
+      width: 13px;
+      height: 18px;
+      border-radius: 100% 0 100% 0;
+      background: var(--sage);
+      transform: rotate(34deg);
+      margin-top: -18px;
+      margin-left: -5px;
+    }
+
+    .icon-row { display: flex; align-items: center; gap: 16px; color: var(--muted); }
+    .icon-button { width: 40px; height: 40px; display: grid; place-items: center; background: transparent; border: 0; padding: 0; }
+
+    .hero { position: relative; height: 338px; margin-bottom: 10px; }
+    .orbit { position: absolute; left: 40px; right: 40px; top: 28px; height: 224px; border-radius: 50%; border: 1px dashed rgba(255, 95, 115, .28); border-bottom-color: transparent; }
+    .blender { position: absolute; left: 50%; top: 96px; transform: translateX(-50%); width: 132px; height: 198px; z-index: 3; }
+    #bubbleLayer { position: absolute; inset: 0; z-index: 4; }
+
+    .bubble {
+      position: absolute;
+      z-index: 4;
+      width: 78px;
+      height: 78px;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      display: grid;
+      place-items: center;
+      transition: transform .16s ease, border-color .16s ease, opacity .16s ease;
+    }
+
+    .bubble:active { transform: scale(.98); }
+    .bubble.is-selected { border-color: var(--accent); background: var(--accent-soft); }
+    .bubble .asset { width: 48px; height: 48px; }
+
+    .bubble .add {
+      position: absolute;
+      right: -4px;
+      bottom: 8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid var(--surface);
+      background: var(--accent);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .bubble.is-selected .add { background: var(--sage); font-size: 15px; font-weight: 800; }
+    .bubble.is-empty { border-style: dashed; background: rgba(255,255,255,.74); }
+    .bubble[data-slot="0"] { left: 58px; top: 4px; }
+    .bubble[data-slot="1"] { right: 58px; top: 4px; }
+    .bubble[data-slot="2"] { left: 8px; top: 116px; }
+    .bubble[data-slot="3"] { right: 8px; top: 116px; }
+    .bubble[data-slot="4"] { left: 58px; top: 228px; }
+    .bubble[data-slot="5"] { right: 58px; top: 228px; }
+
+    .bubble-name {
+      position: absolute;
+      left: 50%;
+      bottom: -20px;
+      transform: translateX(-50%);
+      max-width: 92px;
+      color: var(--text);
+      font-size: 11px;
+      line-height: 1.1;
+      font-weight: 700;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bubble-remove {
+      position: absolute;
+      left: -5px;
+      top: 8px;
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      line-height: 1;
+      z-index: 6;
+    }
+
+    .picker-popover {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 2px;
+      z-index: 8;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255,255,255,.96);
+      box-shadow: 0 16px 40px rgba(36, 31, 24, .12);
+      padding: 12px;
+    }
+
+    .picker-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .picker-close {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--muted);
+    }
+
+    .picker-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      max-height: 148px;
+      overflow: auto;
+    }
+
+    .picker-item {
+      min-height: 66px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface);
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 6px;
+      font-size: 11px;
+      line-height: 1.1;
+      text-align: center;
+    }
+
+    .picker-item .asset { width: 30px; height: 30px; }
+    .picker-item:disabled { opacity: .38; background: var(--surface-2); }
+
+    .select-panel {
+      position: relative;
+      z-index: 5;
+      margin-top: -24px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      min-height: 88px;
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      background: var(--surface-2);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .chip-card {
+      min-height: 88px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 8px;
+      position: relative;
+      font-size: 13px;
+      line-height: 1.1;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .chip-card svg { width: 38px; height: 38px; }
+    .chip-card .x { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border: 0; border-radius: 50%; background: var(--surface-2); color: var(--muted); display: grid; place-items: center; font-size: 16px; line-height: 1; }
+    .ingredient-select { width: calc(100% - 12px); border: 0; border-radius: 999px; background: var(--surface-2); color: var(--text); padding: 7px 8px; font-size: 11px; font-weight: 700; text-align: center; }
+
+    .helper-row { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin: 12px 0 0; color: var(--muted); font-size: 14px; line-height: 1.35; }
+    .mini-button { border: 0; background: transparent; color: var(--accent); font-weight: 700; padding: 0; }
+
+    .primary {
+      width: 100%;
+      height: 48px;
+      border-radius: 999px;
+      border: 0;
+      background: var(--accent);
+      color: white;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 8px 0 10px;
+    }
+
+    .feedback { border: 1px solid var(--line); border-radius: 24px; background: var(--surface); padding: 12px; margin-bottom: 22px; }
+    .feedback-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .mascot { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-soft); border: 1px solid #ffd9df; display: grid; place-items: center; flex: 0 0 auto; }
+
+    .feedback h2, .section-title { margin: 0; font-size: 19px; line-height: 1.2; letter-spacing: -0.03em; font-weight: 800; }
+    .feedback p, .section-link, .muted { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.35; font-weight: 400; }
+
+    .score-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+    .score-card { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px; background: var(--surface-2); }
+    .score-label { display: block; color: var(--muted); font-size: 11px; line-height: 1.2; margin-bottom: 4px; }
+    .score-value { display: block; color: var(--text); font-size: 14px; line-height: 1.2; font-weight: 800; }
+
+    .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .tag { min-height: 30px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text); background: var(--surface); }
+    .recommendation { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+    .ghost { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font-size: 14px; font-weight: 700; white-space: nowrap; }
+
+    .section { margin-bottom: 24px; }
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+    .section-link { color: var(--muted); text-decoration: none; }
+    .rail { display: grid; grid-auto-flow: column; grid-auto-columns: 92px; gap: 10px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+    .rail::-webkit-scrollbar { display: none; }
+
+    .tile {
+      height: 100px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: var(--surface);
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 10px;
+      position: relative;
+      font-size: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .tile svg { width: 40px; height: 40px; }
+    .status { position: absolute; top: 10px; right: 10px; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; line-height: 1; background: var(--sage); color: #fff; }
+    .tile:not(.is-selected) .status { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+    .tile.is-selected { background: var(--accent-soft); border-color: #ffd9df; }
+
+    .bottom-safe { height: 16px; width: 120px; border-radius: 999px; background: #d7d1ca; margin: 8px auto 0; }
+    svg { display: block; }
+    .line-icon { width: 24px; height: 24px; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    .motion-dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 95, 115, .42); }
+    .d1 { left: 108px; top: 92px; } .d2 { right: 116px; top: 62px; } .d3 { right: 92px; top: 222px; }
+
+
+    .save-button { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 0; background: var(--sage); color: #fff; font-size: 14px; font-weight: 800; white-space: nowrap; }
+    .category-group { margin-bottom: 18px; }
+    .category-title { margin: 0 0 8px; color: var(--muted); font-size: 13px; line-height: 1.2; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+    .category-group .rail { margin-bottom: 2px; }
+    .history-list { display: grid; gap: 10px; }
+    .history-card { border: 1px solid var(--line); border-radius: 18px; background: var(--surface); padding: 12px; box-shadow: var(--shadow); }
+    .history-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .history-title { margin: 0; font-size: 15px; line-height: 1.2; font-weight: 800; }
+    .history-date { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .history-ingredients { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .history-empty { border: 1px dashed var(--line); border-radius: 18px; background: var(--surface-2); color: var(--muted); padding: 16px; font-size: 14px; text-align: center; }
+
+    @media (max-width: 380px) {
+      .page { padding-left: 16px; padding-right: 16px; }
+      .hero { transform: scale(.96); transform-origin: top center; margin-bottom: 4px; }
+      .chip-card { min-height: 80px; font-size: 11px; }
+      .feedback h2, .section-title { font-size: 20px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand" aria-label="Smoothie"><span>Smoothie</span><span class="leaf" aria-hidden="true"></span></div>
+    </header>
+
+    <main>
+      <section class="hero" aria-label="Build a smoothie">
+        <div class="orbit" aria-hidden="true"></div>
+        <span class="motion-dot d1"></span><span class="motion-dot d2"></span><span class="motion-dot d3"></span>
+        <div id="bubbleLayer"></div>
+        <div id="ingredientPicker" class="picker-popover" hidden></div>
+        <svg class="blender" viewBox="0 0 180 270" aria-label="Blender with smoothie">
+          <path d="M126 70h18c20 0 28 16 28 43v8c0 28-11 44-31 44h-15v-19h13c9 0 13-10 13-27v-8c0-17-4-25-14-25h-12z" fill="none" stroke="#d9d0c4" stroke-width="9" stroke-linecap="round"/>
+          <path d="M41 34h92c-2 19-5 107-10 137H52C47 141 43 53 41 34z" fill="#fff" opacity=".72" stroke="#d8d0c6" stroke-width="3"/>
+          <path id="smoothieFill" d="M50 92c13 10 56 10 75 0l-8 75H58z" fill="#f47f8b"/>
+          <path d="M52 92c14 9 56 9 73 0 0 13-73 13-73 0z" fill="#ffb1b9"/>
+          <g fill="#a54852" opacity=".35"><circle cx="78" cy="121" r="2"/><circle cx="98" cy="114" r="1.8"/><circle cx="70" cy="145" r="1.6"/><circle cx="105" cy="149" r="1.8"/></g>
+          <path d="M73 141c4 7 25 7 30 0" stroke="#5c473b" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="74" cy="131" r="3" fill="#5c473b"/><circle cx="102" cy="131" r="3" fill="#5c473b"/>
+          <path d="M30 31h113c-2-19-110-19-113 0z" fill="#7d8461"/><rect x="53" y="14" width="67" height="18" rx="9" fill="#68704f"/>
+          <path d="M32 168h113l13 63c3 15-7 28-22 28H42c-15 0-25-13-22-28z" fill="#77805d"/>
+          <path d="M44 178h91c9 0 16 7 17 15l7 36c3 16-8 30-24 30H42c-16 0-27-14-24-30l7-36c1-8 9-15 19-15z" fill="#848d67"/>
+          <circle cx="62" cy="225" r="18" fill="#f8f5ed" stroke="#675f52" stroke-width="2"/><circle cx="112" cy="226" r="7" fill="#f8f5ed"/><circle cx="135" cy="226" r="7" fill="#f8f5ed"/>
+        </svg>
+      </section>
+
+      <button id="blendButton" class="primary" aria-label="Blend selected ingredients"><svg class="line-icon" viewBox="0 0 24 24"><path d="M8 3h8M9 3l1 7h4l1-7M7 10h10l-1 8H8zM7 21h10"/></svg><span>Blend</span></button>
+
+      <section id="feedback" class="feedback" aria-label="Smoothie balance feedback">
+        <div class="feedback-header">
+          <div class="mascot" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 32 32"><circle cx="16" cy="17" r="11" fill="#ff8d9b"/><path d="M15 5c-1-5 4-6 5-2 4-2 6 2 3 5" fill="#75845e"/><circle cx="12" cy="16" r="1.7" fill="#4b3b31"/><circle cx="20" cy="16" r="1.7" fill="#4b3b31"/><path d="M12 21c3 3 6 3 9 0" stroke="#4b3b31" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></div>
+          <div><h2 id="feedbackTitle">Build your smoothie</h2><p id="feedbackSummary">Add ingredients, then blend for a balance check.</p></div>
+        </div>
+        <div class="score-row" aria-label="Balance scores">
+          <div class="score-card"><span class="score-label">Texture</span><span id="textureScore" class="score-value">-</span></div>
+          <div class="score-card"><span class="score-label">Satiety</span><span id="satietyScore" class="score-value">-</span></div>
+          <div class="score-card"><span class="score-label">Flavor</span><span id="flavorScore" class="score-value">-</span></div>
+        </div>
+        <div id="tags" class="tags"><span class="tag">Liquids first</span><span class="tag">Do not over-blend</span><span class="tag">Drink right away</span></div>
+        <div class="recommendation"><p id="recommendationText">Start with a liquid base, then add fruit, protein, and fat/fiber.</p><div style="display:flex; gap:8px; flex:0 0 auto;"><button id="recommendationButton" class="ghost" type="button">Add oat milk</button><button id="saveBlendButton" class="save-button" type="button">Save</button></div></div>
+      </section>
+
+      <section class="section" aria-labelledby="owned-heading">
+        <div class="section-head"><h2 id="owned-heading" class="section-title">My ingredients</h2><span class="section-link">Tap to add</span></div>
+        <div id="ingredientGroups"></div>
+      </section>
+
+      <section class="section" aria-labelledby="buy-heading">
+        <div class="section-head"><h2 id="buy-heading" class="section-title">Ingredients I could buy</h2><span class="section-link">Optional upgrades</span></div>
+        <div id="buyRail" class="rail"></div>
+      </section>
+
+      <section class="section" aria-labelledby="history-heading">
+        <div class="section-head"><h2 id="history-heading" class="section-title">Smoothie history</h2><span class="section-link">Saved blends</span></div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+
+      <div class="bottom-safe" aria-hidden="true"></div>
+    </main>
+  </div>
+
+  <script>
+    const icons = {
+      blueberry: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><circle cx="28" cy="35" r="16" fill="#495d8c"/><circle cx="47" cy="29" r="15" fill="#596fa2"/><circle cx="48" cy="50" r="17" fill="#3d527d"/><circle cx="27" cy="53" r="13" fill="#6076a8"/><circle cx="24" cy="30" r="4" fill="#dbe4ff" opacity=".45"/><path d="M50 18l4 6 7-2-5 5 3 7-7-4-6 5 2-8-6-4 8-.5z" fill="#2f426b"/></svg>',
+      strawberry: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M42 18c18-5 29 7 23 23-5 16-24 26-37 17-14-9-5-35 14-40z" fill="#ef4956"/><path d="M30 25c10-5 21-1 26 8-8-3-18-2-28 5-2-5-1-10 2-13z" fill="#ff7781" opacity=".72"/><path d="M43 17c-4-8 5-14 8-8 5-7 13-2 7 5 7 1 6 9-2 8-3 6-10 5-10-2-3 4-9 2-8-3z" fill="#708956"/><g fill="#fff6d9"><circle cx="48" cy="30" r="1.4"/><circle cx="56" cy="38" r="1.4"/><circle cx="40" cy="42" r="1.4"/><circle cx="33" cy="33" r="1.4"/></g></svg>',
+      mango: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M19 54l12-30 31 10-7 28z" fill="#f7b731"/><path d="M31 24l12 9-4 13-15-4zM43 33l19 1-8 12-15 0zM24 42l15 4-5 15-15-7zM39 46l15 0 1 16-21-1z" stroke="#ffdc80" stroke-width="2" fill="none"/></svg>',
+      cherry: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M39 21c4 13-2 23-13 30M42 22c11 2 18 10 22 23" stroke="#6f8457" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="25" cy="53" r="13" fill="#b63348"/><circle cx="58" cy="53" r="13" fill="#cf3f58"/><circle cx="21" cy="49" r="3" fill="#ffd6dc" opacity=".65"/></svg>',
+      peach: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M40 21c18 0 28 14 22 29-5 14-22 20-35 12-15-9-11-41 13-41z" fill="#f3a273"/><path d="M42 21c-8 12-8 28-1 43" stroke="#d5795f" stroke-width="2" fill="none"/><path d="M38 20c-3-8 8-12 15-8-2 8-8 11-15 8z" fill="#75845e"/></svg>',
+      banana: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M17 21c15 35 36 37 48 12-5 32-39 42-58 2 2-4 5-9 10-14z" fill="#f3c64e"/><path d="M22 18c13 28 28 31 42 17-12 26-38 29-53-4 3-6 7-10 11-13z" fill="#ffe58c"/><path d="M17 21c-3 2-6 3-9 2 3-5 6-7 10-8zM63 32c4-2 7-4 10-8-1 8-4 12-9 16z" fill="#8a6235"/></svg>',
+      chia: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><ellipse cx="40" cy="51" rx="28" ry="12" fill="#e9e3db"/><path d="M15 32c4 22 45 25 50 0 0 16-5 31-25 31S15 48 15 32z" fill="#f7f4ef"/><ellipse cx="40" cy="32" rx="25" ry="12" fill="#4b453d"/><g fill="#d7d0c4"><circle cx="26" cy="31" r="1.4"/><circle cx="34" cy="26" r="1.2"/><circle cx="43" cy="33" r="1.3"/><circle cx="51" cy="29" r="1.1"/></g></svg>',
+      yogurt: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><ellipse cx="40" cy="55" rx="28" ry="10" fill="#e7dfd6"/><path d="M13 35c3 24 51 25 54 0 0 18-7 31-27 31S13 53 13 35z" fill="#fbfaf7"/><ellipse cx="40" cy="35" rx="27" ry="14" fill="#eee9e1"/><path d="M25 37c6-13 31-14 31-1 0 9-23 11-26 3 8 5 21 0 18-5-4-6-18-2-23 3z" fill="#fff"/></svg>',
+      milk: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M34 17h13v9c8 4 11 11 11 21v20H23V47c0-10 3-17 11-21z" fill="#fffaf1" stroke="#ded5c6" stroke-width="2"/><path d="M34 17h13v7H34z" fill="#e7ded0"/><path d="M27 45h27v19H27z" fill="#ffffff"/></svg>',
+      soy: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M34 17h13v9c8 4 11 11 11 21v20H23V47c0-10 3-17 11-21z" fill="#f8f1dd" stroke="#d6c59f" stroke-width="2"/><circle cx="40" cy="55" r="7" fill="#d6b86f"/><path d="M27 45h27v19H27z" fill="#fff7df"/></svg>',
+      coconut: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M31 18h18l7 13v36H24V31z" fill="#f9fbff" stroke="#cfd9df" stroke-width="2"/><path d="M24 39h32v24H24z" fill="#dff4fb"/><path d="M31 18l-5 12h28l-5-12z" fill="#fff"/></svg>',
+      greenTea: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M18 30h40v18c0 12-8 20-20 20S18 60 18 48z" fill="#e9f1dc" stroke="#87966c" stroke-width="2"/><path d="M58 36h5c8 0 8 14 0 14h-5" fill="none" stroke="#87966c" stroke-width="2"/><path d="M24 45h28" stroke="#93aa74" stroke-width="5" stroke-linecap="round"/></svg>',
+      blackTea: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M18 30h40v18c0 12-8 20-20 20S18 60 18 48z" fill="#f2dfc9" stroke="#9a7555" stroke-width="2"/><path d="M58 36h5c8 0 8 14 0 14h-5" fill="none" stroke="#9a7555" stroke-width="2"/><path d="M24 45h28" stroke="#8b5732" stroke-width="5" stroke-linecap="round"/></svg>',
+      honey: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M31 17h18l5 11-5 38H31l-5-38z" fill="#f3b83f" stroke="#c88724" stroke-width="2"/><path d="M29 36h22" stroke="#ffdf82" stroke-width="5"/><path d="M34 17h12v-5H34z" fill="#9b6a37"/></svg>',
+      matcha: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="45" r="25" fill="#eef3df" stroke="#87966c" stroke-width="2"/><circle cx="40" cy="45" r="17" fill="#71864f"/><path d="M29 45c8-5 14-5 22 0" stroke="#dbe8c2" stroke-width="3" fill="none" stroke-linecap="round"/></svg>',
+      avocado: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M40 13c18 13 25 29 17 43-8 14-28 16-38 1-10-16 2-33 21-44z" fill="#7fa25d"/><path d="M40 24c12 10 16 21 10 30-6 10-20 11-27 1-7-11 1-23 17-31z" fill="#d9e8a6"/><circle cx="39" cy="51" r="9" fill="#8d5c38"/></svg>',
+      peanut: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><ellipse cx="40" cy="54" rx="28" ry="10" fill="#d3b190"/><path d="M14 34c3 23 50 23 53 0 0 18-7 30-26 30S14 52 14 34z" fill="#d5a16d"/><ellipse cx="40" cy="34" rx="27" ry="14" fill="#c8894c"/><path d="M24 36c8-13 31-12 31 0 0 8-20 12-27 5 12 3 22-1 19-6-4-5-17-2-23 1z" fill="#f2c697"/></svg>',
+      flax: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><ellipse cx="40" cy="52" rx="28" ry="10" fill="#d7b892"/><path d="M15 35c3 20 48 21 51 0 0 17-8 29-26 29S15 52 15 35z" fill="#e8c89f"/><ellipse cx="40" cy="35" rx="26" ry="12" fill="#8e6034"/><g fill="#d8ad75"><ellipse cx="28" cy="34" rx="3" ry="1.5"/><ellipse cx="39" cy="30" rx="3" ry="1.5"/><ellipse cx="52" cy="36" rx="3" ry="1.5"/></g></svg>',
+      protein: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M26 18h28l4 46H22z" fill="#f5f0ea" stroke="#cfc5ba" stroke-width="2"/><path d="M28 33h24v18H28z" fill="#ffeff2"/><path d="M33 42h14" stroke="#ff5f73" stroke-width="3" stroke-linecap="round"/></svg>'
+    };
+
+    const ingredients = [
+      { id: 'milk', name: 'Oat Milk', position: 'milk', color: '#f2e2bf', roles: ['liquid'], flavor: 'neutral', sweetness: 1, fiber: 0, protein: 0, fat: 1, emulsifier: 0, texture: 1 },
+      { id: 'soy', name: 'Soy Milk', position: 'milk', color: '#ead8a8', roles: ['liquid', 'protein'], flavor: 'neutral', sweetness: 0, fiber: 0, protein: 1, fat: 1, emulsifier: 0, texture: 1 },
+      { id: 'coconut', name: 'Coconut Water', position: 'milk', color: '#dff4fb', roles: ['liquid'], flavor: 'sweet', sweetness: 1, fiber: 0, protein: 0, fat: 0, emulsifier: 0, texture: 0 },
+      { id: 'greenTea', name: 'Green Tea', position: 'milk', color: '#9aaf79', roles: ['liquid'], flavor: 'green', sweetness: 0, fiber: 0, protein: 0, fat: 0, emulsifier: 0, texture: 0 },
+      { id: 'blackTea', name: 'Black Tea', position: 'milk', color: '#9a7555', roles: ['liquid'], flavor: 'tannic', sweetness: 0, fiber: 0, protein: 0, fat: 0, emulsifier: 0, texture: 0 },
+      { id: 'strawberry', name: 'Strawberry', position: 'strawberry', color: '#f47f8b', roles: ['bulk', 'fruit'], flavor: 'tart', sweetness: 2, fiber: 1, protein: 0, fat: 0, emulsifier: 0, texture: 1 },
+      { id: 'blueberry', name: 'Blueberry', position: 'blueberry', color: '#6574a4', roles: ['bulk', 'fruit'], flavor: 'tart', sweetness: 2, fiber: 1, protein: 0, fat: 0, emulsifier: 0, texture: 1 },
+      { id: 'mango', name: 'Mango', position: 'strawberry', color: '#f4b84c', roles: ['bulk', 'fruit'], flavor: 'sweet', sweetness: 3, fiber: 1, protein: 0, fat: 0, emulsifier: 0, texture: 2 },
+      { id: 'cherry', name: 'Cherry', position: 'blueberry', color: '#be3a50', roles: ['bulk', 'fruit'], flavor: 'tart', sweetness: 2, fiber: 1, protein: 0, fat: 0, emulsifier: 0, texture: 1 },
+      { id: 'peach', name: 'Peach', position: 'banana', color: '#f0a173', roles: ['bulk', 'fruit'], flavor: 'sweet', sweetness: 2, fiber: 1, protein: 0, fat: 0, emulsifier: 0, texture: 1 },
+      { id: 'yogurt', name: 'Greek Yogurt', position: 'yogurt', color: '#eee9e1', roles: ['protein', 'emulsifier'], flavor: 'tart', sweetness: 0, fiber: 0, protein: 2, fat: 1, emulsifier: 1, texture: 3 },
+      { id: 'chia', name: 'Chia', position: 'chia', color: '#4b453d', roles: ['fat', 'fiber'], flavor: 'neutral', sweetness: 0, fiber: 2, protein: 1, fat: 2, emulsifier: 0, texture: 2 },
+      { id: 'honey', name: 'Honey', position: 'strawberry', color: '#f0b43c', roles: ['sweetener'], flavor: 'sweet', sweetness: 4, fiber: 0, protein: 0, fat: 0, emulsifier: 0, texture: 0 },
+      { id: 'matcha', name: 'Matcha', position: 'chia', color: '#71864f', roles: ['flavor'], flavor: 'green', sweetness: 0, fiber: 0, protein: 0, fat: 0, emulsifier: 0, texture: 0 },
+      { id: 'banana', name: 'Banana', position: 'banana', color: '#f3c64e', roles: ['bulk', 'fruit', 'emulsifier'], flavor: 'sweet', sweetness: 3, fiber: 1, protein: 0, fat: 0, emulsifier: 1, texture: 3 },
+      { id: 'avocado', name: 'Avocado', position: 'banana', color: '#8fae5c', roles: ['bulk', 'fat', 'emulsifier'], flavor: 'neutral', sweetness: 0, fiber: 2, protein: 0, fat: 3, emulsifier: 1, texture: 3 },
+      { id: 'peanut', name: 'Peanut Butter', position: 'chia', color: '#c8894c', roles: ['fat', 'protein', 'emulsifier'], flavor: 'nutty', sweetness: 0, fiber: 1, protein: 2, fat: 3, emulsifier: 1, texture: 3 },
+      { id: 'flax', name: 'Flax Seed', position: 'chia', color: '#8e6034', roles: ['fat', 'fiber'], flavor: 'nutty', sweetness: 0, fiber: 2, protein: 1, fat: 2, emulsifier: 0, texture: 2 },
+      { id: 'protein', name: 'Protein Powder', position: 'yogurt', color: '#f6e3e8', roles: ['protein'], flavor: 'neutral', sweetness: 1, fiber: 0, protein: 3, fat: 0, emulsifier: 0, texture: 1 }
+    ];
+
+    const ownedIngredientIds = ['milk', 'soy', 'coconut', 'greenTea', 'blackTea', 'strawberry', 'blueberry', 'mango', 'cherry', 'peach', 'yogurt', 'chia', 'honey', 'matcha'];
+    const ingredientCategories = [
+      { title: 'Liquid bases', ids: ['milk', 'soy', 'coconut', 'greenTea', 'blackTea'] },
+      { title: 'Fruit + bulk', ids: ['strawberry', 'blueberry', 'mango', 'cherry', 'peach'] },
+      { title: 'Protein + fat + fiber', ids: ['yogurt', 'chia'] },
+      { title: 'Flavor boosters', ids: ['honey', 'matcha'] }
+    ];
+    const buyIngredientIds = ['banana', 'avocado', 'peanut', 'flax', 'protein'];
+
+    function getSavedHistory() {
+      try {
+        return JSON.parse(window.localStorage.getItem('smoothieHistory') || '[]');
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function setSavedHistory(history) {
+      try {
+        window.localStorage.setItem('smoothieHistory', JSON.stringify(history));
+      } catch (error) {
+        // Some Android file preview surfaces block localStorage for local HTML files.
+        // The app should still work; history just will not persist in that viewer.
+      }
+    }
+
+    const state = {
+      slots: ['milk', 'strawberry', 'blueberry', 'chia', 'yogurt', null],
+      activeSlot: null,
+      lastSuggestion: 'banana',
+      history: getSavedHistory(),
+      get selected() { return this.slots.filter(Boolean); },
+      set selected(ids) { this.slots = [...ids.slice(0, 6), ...Array(Math.max(0, 6 - ids.length)).fill(null)]; }
+    };
+    const byId = Object.fromEntries(ingredients.map(item => [item.id, item]));
+    const allPickerIds = [...ownedIngredientIds, ...buyIngredientIds];
+
+    function ingredientIcon(id, extraClass = '') {
+      return icons[id].replace('class=\"asset\"', `class=\"asset ${extraClass}\"`);
+    }
+
+    function toggleIngredient(id) {
+      if (state.selected.includes(id)) {
+        removeIngredient(id);
+        return;
+      }
+      const emptyIndex = state.slots.findIndex(slot => !slot);
+      if (emptyIndex >= 0) state.slots[emptyIndex] = id;
+      render();
+      renderFeedback(evaluateSmoothie());
+    }
+
+    function addIngredient(id) {
+      if (state.selected.includes(id)) return;
+      const emptyIndex = state.slots.findIndex(slot => !slot);
+      if (emptyIndex >= 0) state.slots[emptyIndex] = id;
+      render();
+    }
+
+    function removeIngredient(id) {
+      const index = state.slots.indexOf(id);
+      if (index >= 0) state.slots[index] = null;
+      closePicker();
+      render();
+    }
+
+    function changeSlot(slotIndex, newId) {
+      if (!newId) return;
+      const currentId = state.slots[slotIndex];
+      if (currentId === newId) return;
+      if (state.selected.includes(newId)) return;
+      state.slots[slotIndex] = newId;
+      closePicker();
+      render();
+      renderFeedback(evaluateSmoothie());
+    }
+
+    function emptyIcon() {
+      return '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="26" fill="#fff6f0" stroke="#e9e2d8" stroke-width="2" stroke-dasharray="5 5"/><path d="M40 28v24M28 40h24" stroke="#ff5f73" stroke-width="4" stroke-linecap="round"/></svg>';
+    }
+
+    function renderBubbles() {
+      const layer = document.getElementById('bubbleLayer');
+      layer.innerHTML = state.slots.map((id, index) => {
+        const item = id ? byId[id] : null;
+        return `<button class="bubble ${item ? 'is-selected' : 'is-empty'}" data-slot="${index}" type="button" aria-label="${item ? `Change ${item.name}` : 'Choose ingredient'}">
+          ${item ? ingredientIcon(id) : emptyIcon()}
+          ${item ? `<span class="bubble-remove" role="button" tabindex="0" data-remove="${id}" aria-label="Remove ${item.name}">×</span>` : ''}
+          <span class="add">${item ? '↻' : '+'}</span>
+          <span class="bubble-name">${item ? item.name : 'Add'}</span>
+        </button>`;
+      }).join('');
+      layer.querySelectorAll('.bubble').forEach(button => {
+        button.addEventListener('click', () => {
+          openPicker(Number(button.dataset.slot));
+          button.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.04)' }, { transform: 'scale(1)' }], { duration: 180, easing: 'ease-out' });
+        });
+      });
+      layer.querySelectorAll('[data-remove]').forEach(button => {
+        button.addEventListener('click', event => {
+          event.stopPropagation();
+          removeIngredient(button.dataset.remove);
+          renderFeedback(evaluateSmoothie());
+        });
+      });
+    }
+
+    function openPicker(slotIndex) {
+      state.activeSlot = slotIndex;
+      const picker = document.getElementById('ingredientPicker');
+      const currentId = state.slots[slotIndex];
+      picker.hidden = false;
+      picker.innerHTML = `<div class="picker-head"><span>${currentId ? `Change ${byId[currentId].name}` : 'Choose an ingredient'} — already-used items are disabled</span><button class="picker-close" type="button" aria-label="Close picker">×</button></div><div class="picker-grid">${allPickerIds.map(id => {
+        const item = byId[id];
+        const disabled = state.selected.includes(id) && id !== currentId;
+        return `<button class="picker-item" type="button" data-pick="${id}" ${disabled ? 'disabled' : ''}>${ingredientIcon(id)}<span>${item.name}</span></button>`;
+      }).join('')}</div>`;
+      picker.querySelector('.picker-close').addEventListener('click', closePicker);
+      picker.querySelectorAll('[data-pick]').forEach(button => button.addEventListener('click', () => changeSlot(slotIndex, button.dataset.pick)));
+    }
+
+    function closePicker() {
+      const picker = document.getElementById('ingredientPicker');
+      picker.hidden = true;
+      picker.innerHTML = '';
+      state.activeSlot = null;
+    }
+
+    function renderTiles(targetId, ids) {
+      const rail = document.getElementById(targetId);
+      rail.innerHTML = ids.map(id => {
+        const item = byId[id];
+        const selected = state.selected.includes(item.id);
+        return `<button class="tile ${selected ? 'is-selected' : ''}" type="button" data-id="${item.id}" aria-label="${selected ? 'Remove' : 'Add'} ${item.name}"><span class="status">${selected ? '✓' : '+'}</span>${ingredientIcon(item.id)}<span>${item.name}</span></button>`;
+      }).join('');
+      rail.querySelectorAll('.tile').forEach(tile => tile.addEventListener('click', () => toggleIngredient(tile.dataset.id)));
+    }
+
+    function renderIngredientGroups() {
+      const container = document.getElementById('ingredientGroups');
+      container.innerHTML = ingredientCategories.map((group, index) => `
+        <div class="category-group">
+          <h3 class="category-title">${group.title}</h3>
+          <div id="ingredientRail${index}" class="rail"></div>
+        </div>
+      `).join('');
+      ingredientCategories.forEach((group, index) => renderTiles(`ingredientRail${index}`, group.ids));
+    }
+
+    function renderRail() {
+      renderIngredientGroups();
+      renderTiles('buyRail', buyIngredientIds);
+    }
+
+    function clampScore(value) { return Math.max(0, Math.min(100, value)); }
+    function scoreLabel(score) {
+      if (score >= 82) return 'Great';
+      if (score >= 62) return 'Good';
+      if (score >= 40) return 'Needs help';
+      return 'Missing';
+    }
+
+    function evaluateSmoothie() {
+      const items = state.selected.map(id => byId[id]);
+      const has = role => items.some(item => item.roles.includes(role));
+      const count = role => items.filter(item => item.roles.includes(role)).length;
+      const total = key => items.reduce((sum, item) => sum + item[key], 0);
+      const liquid = has('liquid');
+      const bulk = count('bulk');
+      const protein = total('protein');
+      const fat = total('fat');
+      const fiber = total('fiber');
+      const emulsifier = total('emulsifier');
+      const sweetness = total('sweetness');
+      const tart = items.filter(item => item.flavor === 'tart').length;
+      const green = items.filter(item => item.flavor === 'green').length;
+      const tannic = items.filter(item => item.flavor === 'tannic').length;
+
+      if (!items.length) {
+        return {
+          title: 'Add ingredients first',
+          summary: 'A smoothie needs at least a liquid base and one bulk ingredient before it can blend well.',
+          texture: 0,
+          satiety: 0,
+          flavor: 0,
+          tags: ['Needs liquid', 'Needs fruit or greens', 'Add protein or fat'],
+          recommendation: 'Add oat milk, coconut water, or tea to start the vortex near the blade.',
+          suggestion: 'milk'
+        };
+      }
+
+      let texture = 20;
+      if (liquid) texture += 28;
+      if (bulk >= 1) texture += 18;
+      if (emulsifier >= 1) texture += 24;
+      if (total('texture') >= 5) texture += 10;
+      if (!liquid && items.length > 1) texture -= 20;
+      if (bulk >= 4 && !emulsifier) texture -= 12;
+      texture = clampScore(texture);
+
+      let satiety = 15;
+      if (protein >= 1) satiety += 28;
+      if (fat >= 1) satiety += 22;
+      if (fiber >= 2) satiety += 22;
+      if (sweetness >= 6 && protein === 0) satiety -= 18;
+      if (sweetness >= 7 && fat === 0) satiety -= 12;
+      if (liquid) satiety += 8;
+      satiety = clampScore(satiety);
+
+      let flavor = 35;
+      if (sweetness >= 2) flavor += 18;
+      if (tart >= 1) flavor += 12;
+      if (items.some(item => item.flavor === 'sweet') && tart >= 1) flavor += 14;
+      if (green && sweetness < 2) flavor -= 15;
+      if (tannic && sweetness < 2) flavor -= 10;
+      if (items.length === 1 && liquid) flavor -= 15;
+      if (items.length >= 3) flavor += 8;
+      flavor = clampScore(flavor);
+
+      const overall = Math.round((texture + satiety + flavor) / 3);
+      const tags = [];
+      if (liquid) tags.push('Liquid base'); else tags.push('Needs liquid');
+      if (emulsifier) tags.push('Creamy emulsion'); else tags.push('Needs banana/yogurt');
+      if (protein) tags.push('Protein'); else tags.push('Low protein');
+      if (fat || fiber >= 2) tags.push('Steady energy'); else tags.push('Add fat/fiber');
+      if (sweetness >= 6 && protein + fat < 2) tags.push('Sugar-heavy');
+      if (tart >= 2 && !items.some(item => item.flavor === 'sweet')) tags.push('Very tart');
+      if (state.selected.includes('matcha') && !state.selected.includes('milk') && !state.selected.includes('soy')) tags.push('Matcha likes milk');
+
+      let recommendation = 'This is balanced: liquids first, blend only until smooth, and drink right away.';
+      let suggestion = null;
+      if (!liquid) { recommendation = 'Add a liquid base so the blades can pull everything into a vortex.'; suggestion = 'milk'; }
+      else if (!bulk) { recommendation = 'Add fruit for bulk and fiber. Frozen fruit will chill the smoothie without watering it down.'; suggestion = 'blueberry'; }
+      else if (!emulsifier) { recommendation = 'Add Greek yogurt, banana, avocado, or peanut butter to make the texture more stable and velvety.'; suggestion = state.selected.includes('yogurt') ? 'banana' : 'yogurt'; }
+      else if (!protein) { recommendation = 'Add Greek yogurt, soy milk, peanut butter, or protein powder to make it more filling and blood-sugar friendly.'; suggestion = state.selected.includes('soy') ? 'yogurt' : 'soy'; }
+      else if (!fat && fiber < 2) { recommendation = 'Add chia, flax, avocado, or peanut butter for healthy fat and fiber so the smoothie keeps you full longer.'; suggestion = state.selected.includes('chia') ? 'flax' : 'chia'; }
+      else if (sweetness >= 7) { recommendation = 'This may be fruit-heavy. Add yogurt, soy milk, chia, or flax to slow the sugar hit.'; suggestion = state.selected.includes('chia') ? 'yogurt' : 'chia'; }
+      else if (state.selected.includes('honey') && sweetness >= 5) { recommendation = 'Honey is tasty, but this is already sweet. Use just a small drizzle or balance it with yogurt/chia.'; suggestion = state.selected.includes('yogurt') ? 'chia' : 'yogurt'; }
+
+      state.lastSuggestion = suggestion;
+      return {
+        title: overall >= 82 ? 'Balanced smoothie' : overall >= 62 ? 'Pretty balanced' : 'Needs a tweak',
+        summary: overall >= 82 ? 'Texture, satiety, and flavor are all working together.' : overall >= 62 ? 'A strong base, but one pillar could be improved.' : 'One or more smoothie science pillars are missing.',
+        texture,
+        satiety,
+        flavor,
+        tags,
+        recommendation,
+        suggestion
+      };
+    }
+
+    function renderFeedback(result = null) {
+      const feedback = result || evaluateSmoothie();
+      document.getElementById('feedbackTitle').textContent = feedback.title;
+      document.getElementById('feedbackSummary').textContent = feedback.summary;
+      document.getElementById('textureScore').textContent = `${scoreLabel(feedback.texture)} ${feedback.texture}`;
+      document.getElementById('satietyScore').textContent = `${scoreLabel(feedback.satiety)} ${feedback.satiety}`;
+      document.getElementById('flavorScore').textContent = `${scoreLabel(feedback.flavor)} ${feedback.flavor}`;
+      document.getElementById('tags').innerHTML = feedback.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+      document.getElementById('recommendationText').textContent = feedback.recommendation;
+      const button = document.getElementById('recommendationButton');
+      if (feedback.suggestion && !state.selected.includes(feedback.suggestion)) {
+        button.hidden = false;
+        button.textContent = `Add ${byId[feedback.suggestion].name}`;
+        button.dataset.add = feedback.suggestion;
+      } else {
+        button.hidden = false;
+        button.textContent = 'Nice blend';
+        button.dataset.add = '';
+      }
+      updateSmoothieColor();
+    }
+
+    function updateSmoothieColor() {
+      const fill = document.getElementById('smoothieFill');
+      const items = state.selected.map(id => byId[id]);
+      fill.setAttribute('fill', items.length ? items[items.length - 1].color : '#f47f8b');
+    }
+
+    function saveBlend() {
+      const ids = state.selected;
+      if (!ids.length) return;
+      const result = evaluateSmoothie();
+      const entry = {
+        id: Date.now(),
+        date: new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
+        ingredients: ids,
+        title: result.title,
+        score: Math.round((result.texture + result.satiety + result.flavor) / 3)
+      };
+      state.history = [entry, ...state.history].slice(0, 12);
+      setSavedHistory(state.history);
+      renderHistory();
+      const button = document.getElementById('saveBlendButton');
+      button.textContent = 'Saved';
+      setTimeout(() => { button.textContent = 'Save'; }, 900);
+    }
+
+    function renderHistory() {
+      const list = document.getElementById('historyList');
+      if (!state.history.length) {
+        list.innerHTML = '<div class="history-empty">No saved blends yet. Build a smoothie, tap Blend, then Save.</div>';
+        return;
+      }
+      list.innerHTML = state.history.map(entry => {
+        const names = entry.ingredients.map(id => byId[id]?.name || id).join(', ');
+        return `<article class="history-card">
+          <div class="history-top"><h3 class="history-title">${entry.title} · ${entry.score}</h3><span class="history-date">${entry.date}</span></div>
+          <p class="history-ingredients">${names}</p>
+        </article>`;
+      }).join('');
+    }
+
+    function render() {
+      renderBubbles();
+      renderRail();
+      renderHistory();
+      updateSmoothieColor();
+    }
+
+    document.getElementById('blendButton').addEventListener('click', () => {
+      const result = evaluateSmoothie();
+      renderFeedback(result);
+      const feedback = document.getElementById('feedback');
+      feedback.animate([{ borderColor: '#e9e2d8' }, { borderColor: '#ff5f73' }, { borderColor: '#e9e2d8' }], { duration: 600, easing: 'ease-out' });
+    });
+
+    document.getElementById('recommendationButton').addEventListener('click', event => {
+      const id = event.currentTarget.dataset.add;
+      if (id) { addIngredient(id); renderFeedback(evaluateSmoothie()); }
+    });
+
+    document.getElementById('saveBlendButton').addEventListener('click', saveBlend);
+
+    render();
+    renderFeedback({
+      title: 'Build your smoothie',
+      summary: 'Add ingredients, then blend for a balance check.',
+      texture: 0,
+      satiety: 0,
+      flavor: 0,
+      tags: ['Liquids first', 'Do not over-blend', 'Drink right away'],
+      recommendation: 'Start with a liquid base, then add fruit, protein, and fat/fiber.',
+      suggestion: 'milk'
+    });
+  </script>
+</body>
+</html>
