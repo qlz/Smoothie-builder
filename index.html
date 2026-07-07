@@ -44,10 +44,11 @@
     }
 
     .topbar {
-      height: 36px;
+      min-height: 36px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 12px;
       margin-bottom: 10px;
     }
 
@@ -74,9 +75,9 @@
     .icon-row { display: flex; align-items: center; gap: 16px; color: var(--muted); }
     .icon-button { width: 40px; height: 40px; display: grid; place-items: center; background: transparent; border: 0; padding: 0; }
 
-    .hero { position: relative; height: 338px; margin-bottom: 10px; }
-    .orbit { position: absolute; left: 40px; right: 40px; top: 28px; height: 224px; border-radius: 50%; border: 1px dashed rgba(255, 95, 115, .28); border-bottom-color: transparent; }
-    .blender { position: absolute; left: 50%; top: 96px; transform: translateX(-50%); width: 132px; height: 198px; z-index: 3; }
+    .hero { position: relative; height: 438px; margin-bottom: 2px; }
+    .orbit { position: absolute; left: 40px; right: 40px; top: 36px; height: 296px; border-radius: 50%; border: 1px dashed rgba(255, 95, 115, .22); border-bottom-color: transparent; }
+    .blender { position: absolute; left: 50%; top: 124px; transform: translateX(-50%); width: 132px; height: 198px; z-index: 3; }
     #bubbleLayer { position: absolute; inset: 0; z-index: 4; }
 
     .bubble {
@@ -119,15 +120,15 @@
     .bubble.is-empty { border-style: dashed; background: rgba(255,255,255,.74); }
     .bubble[data-slot="0"] { left: 58px; top: 4px; }
     .bubble[data-slot="1"] { right: 58px; top: 4px; }
-    .bubble[data-slot="2"] { left: 8px; top: 116px; }
-    .bubble[data-slot="3"] { right: 8px; top: 116px; }
-    .bubble[data-slot="4"] { left: 58px; top: 228px; }
-    .bubble[data-slot="5"] { right: 58px; top: 228px; }
+    .bubble[data-slot="2"] { left: 8px; top: 148px; }
+    .bubble[data-slot="3"] { right: 8px; top: 148px; }
+    .bubble[data-slot="4"] { left: 58px; top: 292px; }
+    .bubble[data-slot="5"] { right: 58px; top: 292px; }
 
     .bubble-name {
       position: absolute;
       left: 50%;
-      bottom: -20px;
+      bottom: -18px;
       transform: translateX(-50%);
       max-width: 92px;
       color: var(--text);
@@ -282,22 +283,39 @@
       margin: 8px 0 10px;
     }
 
-    .feedback { border: 1px solid var(--line); border-radius: 24px; background: var(--surface); padding: 12px; margin-bottom: 22px; }
-    .feedback-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .mascot { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-soft); border: 1px solid #ffd9df; display: grid; place-items: center; flex: 0 0 auto; }
+    .feedback { border: 1px solid var(--line); border-radius: 20px; background: var(--surface); padding: 10px; margin-bottom: 14px; box-shadow: var(--shadow); }
+    .feedback-header { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 9px; margin-bottom: 8px; }
+    .mascot { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-soft); border: 1px solid #ffd9df; display: grid; place-items: center; flex: 0 0 auto; }
+    .mascot svg { width: 22px; height: 22px; }
 
-    .feedback h2, .section-title { margin: 0; font-size: 19px; line-height: 1.2; letter-spacing: -0.03em; font-weight: 800; }
-    .feedback p, .section-link, .muted { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.35; font-weight: 400; }
+    .feedback h2, .section-title { margin: 0; font-size: 18px; line-height: 1.15; letter-spacing: -0.03em; font-weight: 850; }
+    .feedback p, .section-link, .muted { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.25; font-weight: 400; }
 
-    .score-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-    .score-card { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px; background: var(--surface-2); }
-    .score-label { display: block; color: var(--muted); font-size: 11px; line-height: 1.2; margin-bottom: 4px; }
-    .score-value { display: block; color: var(--text); font-size: 14px; line-height: 1.2; font-weight: 800; }
+    .compact-score { display: none; min-width: 70px; padding: 6px 8px; border-radius: 16px; border: 1px solid #ffd9df; background: var(--accent-soft); text-align: center; }
+    .compact-score.is-visible { display: block; }
+    .compact-score span { display: block; color: var(--muted); font-size: 9px; line-height: 1; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; }
+    .compact-score strong { display: block; margin-top: 2px; color: var(--text); font-size: 28px; line-height: .9; font-weight: 950; letter-spacing: -0.06em; }
+    .compact-score::after { content: 'Updated'; display: block; max-height: 0; opacity: 0; overflow: hidden; color: var(--sage); font-size: 9px; line-height: 1; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; transition: opacity .18s ease, max-height .18s ease, margin-top .18s ease; }
+    .compact-score.is-updated { animation: scorePulse .7s ease-out; }
+    .compact-score.is-updated::after { max-height: 12px; opacity: 1; margin-top: 4px; }
 
-    .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-    .tag { min-height: 30px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text); background: var(--surface); }
-    .recommendation { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
-    .ghost { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font-size: 14px; font-weight: 700; white-space: nowrap; }
+    @keyframes scorePulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,95,115,.25); }
+      45% { transform: scale(1.04); box-shadow: 0 0 0 7px rgba(255,95,115,.08); }
+      100% { transform: scale(1); box-shadow: none; }
+    }
+
+    .score-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 7px; }
+    .score-card { position: relative; min-height: 52px; border: 1px solid var(--line); border-radius: 15px; padding: 7px 7px 7px 10px; background: linear-gradient(90deg, rgba(255,95,115,.08), rgba(255,255,255,.98)); overflow: hidden; }
+    .score-card::before { content: ''; position: absolute; left: 0; top: 9px; bottom: 9px; width: 4px; border-radius: 999px; background: var(--accent); opacity: .72; }
+    .score-label { display: flex; align-items: center; gap: 4px; color: var(--muted); font-size: 10px; line-height: 1; margin-bottom: 5px; font-weight: 900; text-transform: uppercase; letter-spacing: .04em; }
+    .score-label::before { content: ''; width: 14px; height: 14px; border-radius: 50%; background: #dff5e6; box-shadow: inset 0 0 0 4px #61d87a; opacity: .9; }
+    .score-value { display: block; color: var(--text); font-size: 20px; line-height: .95; font-weight: 950; letter-spacing: -0.04em; text-align: right; }
+
+    .tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 7px; }
+    .tag { min-height: 22px; padding: 3px 7px; border: 1px solid var(--line); border-radius: 999px; display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text); background: var(--surface); }
+    .recommendation { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 7px; border-top: 1px solid var(--line); }
+    .ghost { min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font-size: 14px; font-weight: 700; white-space: nowrap; }
 
     .section { margin-bottom: 24px; }
     .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
@@ -327,11 +345,11 @@
     .bottom-safe { height: 16px; width: 120px; border-radius: 999px; background: #d7d1ca; margin: 8px auto 0; }
     svg { display: block; }
     .line-icon { width: 24px; height: 24px; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; fill: none; }
-    .motion-dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 95, 115, .42); }
-    .d1 { left: 108px; top: 92px; } .d2 { right: 116px; top: 62px; } .d3 { right: 92px; top: 222px; }
+    .motion-dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 95, 115, .32); }
+    .d1 { left: 108px; top: 116px; } .d2 { right: 116px; top: 84px; } .d3 { right: 92px; top: 270px; }
 
 
-    .save-button { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 0; background: var(--sage); color: #fff; font-size: 14px; font-weight: 800; white-space: nowrap; }
+    .save-button { min-height: 34px; padding: 0 12px; border-radius: 999px; border: 0; background: var(--sage); color: #fff; font-size: 14px; font-weight: 800; white-space: nowrap; }
     .category-group { margin-bottom: 18px; }
     .category-title { margin: 0 0 8px; color: var(--muted); font-size: 13px; line-height: 1.2; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
     .category-group .rail { margin-bottom: 2px; }
@@ -343,11 +361,287 @@
     .history-ingredients { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
     .history-empty { border: 1px dashed var(--line); border-radius: 18px; background: var(--surface-2); color: var(--muted); padding: 16px; font-size: 14px; text-align: center; }
 
+
+    .blender.is-blending {
+      animation: blenderShake .08s linear infinite;
+      transform-origin: 50% 58%;
+    }
+
+    .blender.is-blending #smoothieFill,
+    .blender.is-blending #smoothieFoam,
+    .blender.is-blending #smoothieBits,
+    .blender.is-blending #smoothieFace {
+      animation: smoothiePulse .22s ease-in-out infinite alternate;
+      transform-origin: 50% 48%;
+    }
+
+    @keyframes blenderShake {
+      0% { transform: translateX(-50%) rotate(-1.3deg) translateY(0); }
+      50% { transform: translateX(-50%) rotate(1.3deg) translateY(-1px); }
+      100% { transform: translateX(-50%) rotate(-1.3deg) translateY(0); }
+    }
+
+    @keyframes smoothiePulse {
+      from { transform: scaleX(.97) translateY(1px); opacity: .86; }
+      to { transform: scaleX(1.04) translateY(-1px); opacity: 1; }
+    }
+
+    .size-panel {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+      padding: 10px;
+      margin: 0 0 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .size-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .size-title {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.1;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .recipe-note {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .size-tabs {
+      display: inline-grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 2px;
+      padding: 2px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(250,246,239,.76);
+      flex: 0 0 auto;
+    }
+
+    .header-size-tabs { align-self: center; }
+
+    .size-tab {
+      min-height: 24px;
+      min-width: 34px;
+      padding: 0 7px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .size-tab.is-active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+
+    .amount-list {
+      display: grid;
+      gap: 3px;
+    }
+
+    .amount-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+      padding: 5px 7px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+      line-height: 1.15;
+    }
+
+    .amount-row:last-child { border-bottom: 0; }
+    .amount-name { font-weight: 850; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .amount-control { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); text-align: right; }
+    .amount-stepper { width: 23px; height: 23px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); display: grid; place-items: center; font-weight: 900; line-height: 1; }
+    .amount-stepper:disabled { opacity: .35; }
+    .amount-value { min-width: 72px; color: var(--text); font-weight: 800; text-align: center; }
+    .amount-note { display: block; color: var(--muted); font-size: 10px; font-weight: 600; margin-top: 1px; }
+    .amount-empty { color: var(--muted); font-size: 12px; line-height: 1.3; padding: 2px 4px 4px; }
+
+    .overall-score-card { display: none !important; }
+
+    .history-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+    .load-button { min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font-size: 13px; font-weight: 800; }
+
+
+
+    .bubble-amount-chip {
+      position: absolute;
+      z-index: 6;
+      width: 112px;
+      min-height: 24px;
+      padding: 2px 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3px;
+      backdrop-filter: blur(8px);
+    }
+
+    .bubble-amount-chip[data-slot="0"] { left: 97px; top: 103px; transform: translateX(-50%); }
+    .bubble-amount-chip[data-slot="1"] { left: calc(100% - 97px); top: 103px; transform: translateX(-50%); }
+    .bubble-amount-chip[data-slot="2"] { left: 47px; top: 247px; transform: translateX(-50%); }
+    .bubble-amount-chip[data-slot="3"] { left: calc(100% - 47px); top: 247px; transform: translateX(-50%); }
+    .bubble-amount-chip[data-slot="4"] { left: 97px; top: 391px; transform: translateX(-50%); }
+    .bubble-amount-chip[data-slot="5"] { left: calc(100% - 97px); top: 391px; transform: translateX(-50%); }
+
+    .bubble-amount-button {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: none;
+      background: var(--surface-2);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 900;
+      padding: 0;
+      flex: 0 0 auto;
+    }
+
+    .bubble-amount-button:disabled { opacity: .32; }
+    .bubble-amount-value {
+      width: 62px;
+      color: var(--text);
+      font-size: 10px;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .size-panel.is-compact-size-only {
+      padding: 8px 10px;
+      margin: -2px 0 8px;
+    }
+
+    .size-panel.is-compact-size-only .size-top { margin-bottom: 0; }
+    .size-panel.is-compact-size-only #amountSuggestions { display: none; }
+
+    .recipe-card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--surface);
+      padding: 14px;
+      box-shadow: 0 10px 28px rgba(36, 31, 24, .06);
+    }
+
+    .recipe-card-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      margin-bottom: 10px;
+    }
+
+    .recipe-card-title {
+      margin: 0 0 4px;
+      font-size: 16px;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      font-weight: 900;
+    }
+
+    .recipe-title-input {
+      width: 100%;
+      margin: 0 0 4px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      font-size: 16px;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      font-weight: 900;
+      outline: none;
+    }
+
+    .recipe-title-input:focus {
+      box-shadow: 0 2px 0 var(--accent);
+    }
+
+    .recipe-card-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .recipe-score {
+      width: 50px;
+      height: 50px;
+      border-radius: 18px;
+      border: 1px solid #ffd9df;
+      background: var(--accent-soft);
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .recipe-lines {
+      display: grid;
+      gap: 6px;
+      margin: 0 0 12px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .recipe-line {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .recipe-line:last-child { border-bottom: 0; padding-bottom: 0; }
+    .recipe-line-name { font-weight: 800; }
+    .recipe-line-amount { color: var(--muted); font-weight: 800; white-space: nowrap; }
+
+    .recipe-card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .recipe-card-date { color: var(--muted); font-size: 12px; font-weight: 700; }
+
     @media (max-width: 380px) {
       .page { padding-left: 16px; padding-right: 16px; }
-      .hero { transform: scale(.96); transform-origin: top center; margin-bottom: 4px; }
+      .hero { transform: scale(.94); transform-origin: top center; margin-bottom: -18px; }
       .chip-card { min-height: 80px; font-size: 11px; }
-      .feedback h2, .section-title { font-size: 20px; }
+      .feedback h2, .section-title { font-size: 18px; }
+      .size-tab { min-width: 31px; padding: 0 6px; }
     }
   </style>
 </head>
@@ -356,6 +650,11 @@
   <div class="page">
     <header class="topbar">
       <div class="brand" aria-label="Smoothie"><span>Smoothie</span><span class="leaf" aria-hidden="true"></span></div>
+      <div class="size-tabs header-size-tabs" role="group" aria-label="Choose smoothie size">
+        <button class="size-tab" type="button" data-size="12">12 oz</button>
+        <button class="size-tab" type="button" data-size="16">16 oz</button>
+        <button class="size-tab" type="button" data-size="32">32 oz</button>
+      </div>
     </header>
 
     <main>
@@ -368,9 +667,9 @@
           <path d="M126 70h18c20 0 28 16 28 43v8c0 28-11 44-31 44h-15v-19h13c9 0 13-10 13-27v-8c0-17-4-25-14-25h-12z" fill="none" stroke="#d9d0c4" stroke-width="9" stroke-linecap="round"/>
           <path d="M41 34h92c-2 19-5 107-10 137H52C47 141 43 53 41 34z" fill="#fff" opacity=".72" stroke="#d8d0c6" stroke-width="3"/>
           <path id="smoothieFill" d="M50 92c13 10 56 10 75 0l-8 75H58z" fill="#f47f8b"/>
-          <path d="M52 92c14 9 56 9 73 0 0 13-73 13-73 0z" fill="#ffb1b9"/>
-          <g fill="#a54852" opacity=".35"><circle cx="78" cy="121" r="2"/><circle cx="98" cy="114" r="1.8"/><circle cx="70" cy="145" r="1.6"/><circle cx="105" cy="149" r="1.8"/></g>
-          <path d="M73 141c4 7 25 7 30 0" stroke="#5c473b" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="74" cy="131" r="3" fill="#5c473b"/><circle cx="102" cy="131" r="3" fill="#5c473b"/>
+          <path id="smoothieFoam" d="M52 92c14 9 56 9 73 0 0 13-73 13-73 0z" fill="#ffb1b9"/>
+          <g id="smoothieBits" fill="#a54852" opacity=".35"><circle cx="78" cy="121" r="2"/><circle cx="98" cy="114" r="1.8"/><circle cx="70" cy="145" r="1.6"/><circle cx="105" cy="149" r="1.8"/></g>
+          <g id="smoothieFace"><path id="smoothieMouth" d="M73 141c4 7 25 7 30 0" stroke="#5c473b" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="74" cy="131" r="3" fill="#5c473b"/><circle cx="102" cy="131" r="3" fill="#5c473b"/></g>
           <path d="M30 31h113c-2-19-110-19-113 0z" fill="#7d8461"/><rect x="53" y="14" width="67" height="18" rx="9" fill="#68704f"/>
           <path d="M32 168h113l13 63c3 15-7 28-22 28H42c-15 0-25-13-22-28z" fill="#77805d"/>
           <path d="M44 178h91c9 0 16 7 17 15l7 36c3 16-8 30-24 30H42c-16 0-27-14-24-30l7-36c1-8 9-15 19-15z" fill="#848d67"/>
@@ -379,11 +678,11 @@
       </section>
 
       <button id="blendButton" class="primary" aria-label="Blend selected ingredients"><svg class="line-icon" viewBox="0 0 24 24"><path d="M8 3h8M9 3l1 7h4l1-7M7 10h10l-1 8H8zM7 21h10"/></svg><span>Blend</span></button>
-
       <section id="feedback" class="feedback" aria-label="Smoothie balance feedback">
         <div class="feedback-header">
           <div class="mascot" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 32 32"><circle cx="16" cy="17" r="11" fill="#ff8d9b"/><path d="M15 5c-1-5 4-6 5-2 4-2 6 2 3 5" fill="#75845e"/><circle cx="12" cy="16" r="1.7" fill="#4b3b31"/><circle cx="20" cy="16" r="1.7" fill="#4b3b31"/><path d="M12 21c3 3 6 3 9 0" stroke="#4b3b31" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></div>
-          <div><h2 id="feedbackTitle">Build your smoothie</h2><p id="feedbackSummary">Add ingredients, then blend for a balance check.</p></div>
+          <div><h2 id="feedbackTitle">Build your smoothie</h2><p id="feedbackSummary">Blend to score.</p></div>
+          <div id="compactScore" class="compact-score" aria-live="polite"><span>Score</span><strong id="overallScoreValue">-</strong></div>
         </div>
         <div class="score-row" aria-label="Balance scores">
           <div class="score-card"><span class="score-label">Texture</span><span id="textureScore" class="score-value">-</span></div>
@@ -424,6 +723,7 @@
       chia: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><ellipse cx="40" cy="51" rx="28" ry="12" fill="#e9e3db"/><path d="M15 32c4 22 45 25 50 0 0 16-5 31-25 31S15 48 15 32z" fill="#f7f4ef"/><ellipse cx="40" cy="32" rx="25" ry="12" fill="#4b453d"/><g fill="#d7d0c4"><circle cx="26" cy="31" r="1.4"/><circle cx="34" cy="26" r="1.2"/><circle cx="43" cy="33" r="1.3"/><circle cx="51" cy="29" r="1.1"/></g></svg>',
       yogurt: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><ellipse cx="40" cy="55" rx="28" ry="10" fill="#e7dfd6"/><path d="M13 35c3 24 51 25 54 0 0 18-7 31-27 31S13 53 13 35z" fill="#fbfaf7"/><ellipse cx="40" cy="35" rx="27" ry="14" fill="#eee9e1"/><path d="M25 37c6-13 31-14 31-1 0 9-23 11-26 3 8 5 21 0 18-5-4-6-18-2-23 3z" fill="#fff"/></svg>',
       milk: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M34 17h13v9c8 4 11 11 11 21v20H23V47c0-10 3-17 11-21z" fill="#fffaf1" stroke="#ded5c6" stroke-width="2"/><path d="M34 17h13v7H34z" fill="#e7ded0"/><path d="M27 45h27v19H27z" fill="#ffffff"/></svg>',
+      dairyMilk: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M34 17h13v9c8 4 11 11 11 21v20H23V47c0-10 3-17 11-21z" fill="#fffdf6" stroke="#ded5c6" stroke-width="2"/><path d="M34 17h13v7H34z" fill="#e7ded0"/><path d="M27 44h27v20H27z" fill="#ffffff"/><circle cx="40" cy="54" r="6" fill="#f2eadb"/></svg>',
       soy: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M34 17h13v9c8 4 11 11 11 21v20H23V47c0-10 3-17 11-21z" fill="#f8f1dd" stroke="#d6c59f" stroke-width="2"/><circle cx="40" cy="55" r="7" fill="#d6b86f"/><path d="M27 45h27v19H27z" fill="#fff7df"/></svg>',
       coconut: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M31 18h18l7 13v36H24V31z" fill="#f9fbff" stroke="#cfd9df" stroke-width="2"/><path d="M24 39h32v24H24z" fill="#dff4fb"/><path d="M31 18l-5 12h28l-5-12z" fill="#fff"/></svg>',
       greenTea: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M18 30h40v18c0 12-8 20-20 20S18 60 18 48z" fill="#e9f1dc" stroke="#87966c" stroke-width="2"/><path d="M58 36h5c8 0 8 14 0 14h-5" fill="none" stroke="#87966c" stroke-width="2"/><path d="M24 45h28" stroke="#93aa74" stroke-width="5" stroke-linecap="round"/></svg>',
@@ -433,6 +733,11 @@
       avocado: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M40 13c18 13 25 29 17 43-8 14-28 16-38 1-10-16 2-33 21-44z" fill="#7fa25d"/><path d="M40 24c12 10 16 21 10 30-6 10-20 11-27 1-7-11 1-23 17-31z" fill="#d9e8a6"/><circle cx="39" cy="51" r="9" fill="#8d5c38"/></svg>',
       peanut: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><ellipse cx="40" cy="54" rx="28" ry="10" fill="#d3b190"/><path d="M14 34c3 23 50 23 53 0 0 18-7 30-26 30S14 52 14 34z" fill="#d5a16d"/><ellipse cx="40" cy="34" rx="27" ry="14" fill="#c8894c"/><path d="M24 36c8-13 31-12 31 0 0 8-20 12-27 5 12 3 22-1 19-6-4-5-17-2-23 1z" fill="#f2c697"/></svg>',
       flax: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><ellipse cx="40" cy="52" rx="28" ry="10" fill="#d7b892"/><path d="M15 35c3 20 48 21 51 0 0 17-8 29-26 29S15 52 15 35z" fill="#e8c89f"/><ellipse cx="40" cy="35" rx="26" ry="12" fill="#8e6034"/><g fill="#d8ad75"><ellipse cx="28" cy="34" rx="3" ry="1.5"/><ellipse cx="39" cy="30" rx="3" ry="1.5"/><ellipse cx="52" cy="36" rx="3" ry="1.5"/></g></svg>',
+
+      gelatin: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M22 29c0-8 36-8 36 0v25c0 9-36 9-36 0z" fill="#fff0e4" stroke="#d9c8b6" stroke-width="2"/><ellipse cx="40" cy="29" rx="18" ry="7" fill="#ffe0cf"/><path d="M27 42c7 5 20 5 26 0" stroke="#e1a988" stroke-width="3" fill="none" stroke-linecap="round"/></svg>',
+      xanthan: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M26 18h28l5 47H21z" fill="#f8f2dc" stroke="#d6cfb8" stroke-width="2"/><path d="M29 34h22v16H29z" fill="#fffaf0"/><path d="M34 42h12" stroke="#b5a97f" stroke-width="3" stroke-linecap="round"/><circle cx="54" cy="23" r="4" fill="#d7c98e"/></svg>',
+      oats: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><ellipse cx="40" cy="54" rx="29" ry="10" fill="#dac6a8"/><path d="M14 35c3 22 49 22 52 0 0 18-8 30-26 30S14 53 14 35z" fill="#efe0c2"/><ellipse cx="40" cy="35" rx="26" ry="13" fill="#c8a878"/><g fill="#f6e7c9"><ellipse cx="28" cy="34" rx="5" ry="2.4" transform="rotate(-20 28 34)"/><ellipse cx="40" cy="30" rx="5" ry="2.4" transform="rotate(15 40 30)"/><ellipse cx="52" cy="37" rx="5" ry="2.4" transform="rotate(-8 52 37)"/></g></svg>',
+      milkTeaProtein: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M25 16h30l5 48H20z" fill="#f4eadf" stroke="#c9b8a8" stroke-width="2"/><path d="M29 31h22v20H29z" fill="#ead2bc"/><path d="M34 39h13M34 44h10" stroke="#8b6447" stroke-width="3" stroke-linecap="round"/><circle cx="55" cy="23" r="5" fill="#d1a27f"/></svg>',
       protein: '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><path d="M26 18h28l4 46H22z" fill="#f5f0ea" stroke="#cfc5ba" stroke-width="2"/><path d="M28 33h24v18H28z" fill="#ffeff2"/><path d="M33 42h14" stroke="#ff5f73" stroke-width="3" stroke-linecap="round"/></svg>'
     };
 
@@ -442,6 +747,11 @@
       { id: 'coconut', name: 'Coconut Water', position: 'milk', color: '#dff4fb', roles: ['liquid'], flavor: 'sweet', sweetness: 1, fiber: 0, protein: 0, fat: 0, emulsifier: 0, texture: 0 },
       { id: 'greenTea', name: 'Green Tea', position: 'milk', color: '#9aaf79', roles: ['liquid'], flavor: 'green', sweetness: 0, fiber: 0, protein: 0, fat: 0, emulsifier: 0, texture: 0 },
       { id: 'blackTea', name: 'Black Tea', position: 'milk', color: '#9a7555', roles: ['liquid'], flavor: 'tannic', sweetness: 0, fiber: 0, protein: 0, fat: 0, emulsifier: 0, texture: 0 },
+      { id: 'dairyMilk', name: 'Milk', position: 'milk', color: '#fffaf1', roles: ['liquid', 'protein'], flavor: 'neutral', sweetness: 1, fiber: 0, protein: 1, fat: 1, emulsifier: 0, texture: 1 },
+      { id: 'milkTeaProtein', name: 'Milk Tea Protein', position: 'milkTeaProtein', color: '#d8b395', roles: ['protein', 'flavor'], flavor: 'sweet', sweetness: 3, fiber: 0, protein: 4, fat: 0, emulsifier: 0, texture: 1 },
+      { id: 'gelatin', name: 'Gelatin', position: 'gelatin', color: '#f4d8c5', roles: ['protein', 'emulsifier'], flavor: 'neutral', sweetness: 0, fiber: 0, protein: 2, fat: 0, emulsifier: 1, texture: 2 },
+      { id: 'xanthan', name: 'Xanthan Gum', position: 'xanthan', color: '#efe6c6', roles: ['emulsifier'], flavor: 'neutral', sweetness: 0, fiber: 1, protein: 0, fat: 0, emulsifier: 2, texture: 3 },
+      { id: 'oats', name: 'Oats', position: 'oats', color: '#c8a878', roles: ['bulk', 'fiber'], flavor: 'neutral', sweetness: 0, fiber: 2, protein: 1, fat: 0, emulsifier: 0, texture: 2 },
       { id: 'strawberry', name: 'Strawberry', position: 'strawberry', color: '#f47f8b', roles: ['bulk', 'fruit'], flavor: 'tart', sweetness: 2, fiber: 1, protein: 0, fat: 0, emulsifier: 0, texture: 1 },
       { id: 'blueberry', name: 'Blueberry', position: 'blueberry', color: '#6574a4', roles: ['bulk', 'fruit'], flavor: 'tart', sweetness: 2, fiber: 1, protein: 0, fat: 0, emulsifier: 0, texture: 1 },
       { id: 'mango', name: 'Mango', position: 'strawberry', color: '#f4b84c', roles: ['bulk', 'fruit'], flavor: 'sweet', sweetness: 3, fiber: 1, protein: 0, fat: 0, emulsifier: 0, texture: 2 },
@@ -458,11 +768,11 @@
       { id: 'protein', name: 'Protein Powder', position: 'yogurt', color: '#f6e3e8', roles: ['protein'], flavor: 'neutral', sweetness: 1, fiber: 0, protein: 3, fat: 0, emulsifier: 0, texture: 1 }
     ];
 
-    const ownedIngredientIds = ['milk', 'soy', 'coconut', 'greenTea', 'blackTea', 'strawberry', 'blueberry', 'mango', 'cherry', 'peach', 'yogurt', 'chia', 'honey', 'matcha'];
+    const ownedIngredientIds = ['milk', 'soy', 'dairyMilk', 'coconut', 'greenTea', 'blackTea', 'strawberry', 'blueberry', 'mango', 'cherry', 'peach', 'yogurt', 'chia', 'milkTeaProtein', 'gelatin', 'xanthan', 'oats', 'honey', 'matcha'];
     const ingredientCategories = [
-      { title: 'Liquid bases', ids: ['milk', 'soy', 'coconut', 'greenTea', 'blackTea'] },
+      { title: 'Liquid bases', ids: ['milk', 'soy', 'dairyMilk', 'coconut', 'greenTea', 'blackTea'] },
       { title: 'Fruit + bulk', ids: ['strawberry', 'blueberry', 'mango', 'cherry', 'peach'] },
-      { title: 'Protein + fat + fiber', ids: ['yogurt', 'chia'] },
+      { title: 'Protein + fat + fiber', ids: ['yogurt', 'chia', 'milkTeaProtein', 'gelatin', 'xanthan', 'oats'] },
       { title: 'Flavor boosters', ids: ['honey', 'matcha'] }
     ];
     const buyIngredientIds = ['banana', 'avocado', 'peanut', 'flax', 'protein'];
@@ -487,6 +797,9 @@
     const state = {
       slots: ['milk', 'strawberry', 'blueberry', 'chia', 'yogurt', null],
       activeSlot: null,
+      smoothieSize: 16,
+      amounts: {},
+      hasBlended: false,
       lastSuggestion: 'banana',
       history: getSavedHistory(),
       get selected() { return this.slots.filter(Boolean); },
@@ -500,6 +813,7 @@
     }
 
     function toggleIngredient(id) {
+      state.hasBlended = false;
       if (state.selected.includes(id)) {
         removeIngredient(id);
         return;
@@ -511,6 +825,7 @@
     }
 
     function addIngredient(id) {
+      state.hasBlended = false;
       if (state.selected.includes(id)) return;
       const emptyIndex = state.slots.findIndex(slot => !slot);
       if (emptyIndex >= 0) state.slots[emptyIndex] = id;
@@ -518,6 +833,7 @@
     }
 
     function removeIngredient(id) {
+      state.hasBlended = false;
       const index = state.slots.indexOf(id);
       if (index >= 0) state.slots[index] = null;
       closePicker();
@@ -525,6 +841,7 @@
     }
 
     function changeSlot(slotIndex, newId) {
+      state.hasBlended = false;
       if (!newId) return;
       const currentId = state.slots[slotIndex];
       if (currentId === newId) return;
@@ -539,9 +856,154 @@
       return '<svg class="asset" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="26" fill="#fff6f0" stroke="#e9e2d8" stroke-width="2" stroke-dasharray="5 5"/><path d="M40 28v24M28 40h24" stroke="#ff5f73" stroke-width="4" stroke-linecap="round"/></svg>';
     }
 
+
+    const amountDefaults = {
+      milk: { unit: 'cup', bySize: { 12: 0.75, 16: 1, 32: 2 }, min: 0.25, max: 3, note: 'liquid base' },
+      soy: { unit: 'cup', bySize: { 12: 0.75, 16: 1, 32: 2 }, min: 0.25, max: 3, note: 'liquid base' },
+      dairyMilk: { unit: 'cup', bySize: { 12: 0.75, 16: 1, 32: 2 }, min: 0.25, max: 3, note: 'liquid base' },
+      coconut: { unit: 'cup', bySize: { 12: 0.75, 16: 1, 32: 2 }, min: 0.25, max: 3, note: 'liquid base' },
+      greenTea: { unit: 'cup', bySize: { 12: 0.5, 16: 0.75, 32: 1.5 }, min: 0.25, max: 2.5, note: 'lighter liquid' },
+      blackTea: { unit: 'cup', bySize: { 12: 0.5, 16: 0.75, 32: 1.5 }, min: 0.25, max: 2.5, note: 'lighter liquid' },
+      strawberry: { unit: 'cup', bySize: { 12: 0.5, 16: 0.75, 32: 1.5 }, min: 0.25, max: 2.5 },
+      blueberry: { unit: 'cup', bySize: { 12: 0.5, 16: 0.75, 32: 1.5 }, min: 0.25, max: 2.5 },
+      mango: { unit: 'cup', bySize: { 12: 0.5, 16: 0.5, 32: 1 }, min: 0.25, max: 2 },
+      cherry: { unit: 'cup', bySize: { 12: 0.5, 16: 0.5, 32: 1 }, min: 0.25, max: 2 },
+      peach: { unit: 'cup', bySize: { 12: 0.5, 16: 0.75, 32: 1.5 }, min: 0.25, max: 2.5 },
+      yogurt: { unit: 'cup', bySize: { 12: 0.25, 16: 0.5, 32: 1 }, min: 0.25, max: 1.5, note: 'creamy protein' },
+      chia: { unit: 'tsp', bySize: { 12: 0.5, 16: 1, 32: 1 }, min: 0.25, max: 1, note: 'max 1 tsp' },
+      honey: { unit: 'tsp', bySize: { 12: 0.5, 16: 1, 32: 2 }, min: 0, max: 4 },
+      matcha: { unit: 'tsp', bySize: { 12: 0.5, 16: 1, 32: 1.5 }, min: 0.25, max: 3 },
+      banana: { unit: 'item', bySize: { 12: 0.5, 16: 0.5, 32: 1 }, min: 0.25, max: 2, label: 'banana' },
+      avocado: { unit: 'item', bySize: { 12: 0.125, 16: 0.25, 32: 0.5 }, min: 0.125, max: 1, label: 'avocado' },
+      peanut: { unit: 'tsp', bySize: { 12: 1, 16: 3, 32: 6 }, min: 0.25, max: 8, note: '3 tsp = 1 Tbsp' },
+      flax: { unit: 'tsp', bySize: { 12: 1, 16: 3, 32: 6 }, min: 0.25, max: 8, note: 'fiber + fat' },
+      protein: { unit: 'scoop', bySize: { 12: 0.5, 16: 1, 32: 1.5 }, min: 0.25, max: 2, label: 'scoop' },
+      milkTeaProtein: { unit: 'g', bySize: { 12: 20, 16: 41, 32: 50 }, min: 10, max: 60, step: 5, note: 'sweet, so scaled gently' },
+      gelatin: { unit: 'tsp', bySize: { 12: 0.5, 16: 1, 32: 2 }, min: 0.25, max: 3, note: 'bloom first' },
+      xanthan: { unit: 'tsp', bySize: { 12: 0.0625, 16: 0.125, 32: 0.25 }, min: 0, max: 0.25, note: 'tiny amount' },
+      oats: { unit: 'cup', bySize: { 12: 0.125, 16: 0.25, 32: 0.5 }, min: 0, max: 1, note: 'adds body' }
+    };
+
+    function amountKey(id) {
+      return `${state.smoothieSize}:${id}`;
+    }
+
+    function amountConfig(id) {
+      return amountDefaults[id] || { unit: 'custom', bySize: { 12: 1, 16: 1, 32: 1 }, min: 0, max: 10 };
+    }
+
+    function defaultAmount(id) {
+      const config = amountConfig(id);
+      return config.bySize[state.smoothieSize] ?? config.bySize[16] ?? 1;
+    }
+
+    function amountValue(id) {
+      const key = amountKey(id);
+      return state.amounts[key] ?? defaultAmount(id);
+    }
+
+    function amountStep(id) {
+      const config = amountConfig(id);
+      if (config.step) return config.step;
+      if (config.unit === 'cup' || config.unit === 'tsp') return 0.25;
+      if (config.unit === 'item' || config.unit === 'scoop') return 0.25;
+      return 1;
+    }
+
+    function formatFraction(value) {
+      const rounded = Math.round(value * 16) / 16;
+      const whole = Math.floor(rounded);
+      const frac = Math.round((rounded - whole) * 16);
+      const fractions = { 0: '', 1: '1⁄16', 2: '⅛', 3: '3⁄16', 4: '¼', 5: '5⁄16', 6: '⅜', 7: '7⁄16', 8: '½', 9: '9⁄16', 10: '⅝', 11: '11⁄16', 12: '¾', 13: '13⁄16', 14: '⅞', 15: '15⁄16' };
+      if (!whole && !frac) return '0';
+      if (!whole) return fractions[frac];
+      return frac ? `${whole} ${fractions[frac]}` : String(whole);
+    }
+
+    function formatAmount(id) {
+      const config = amountConfig(id);
+      const value = amountValue(id);
+      if (config.unit === 'cup') return `${formatFraction(value)} cup${value === 1 ? '' : 's'}`;
+      if (config.unit === 'tsp') return `${formatFraction(value)} tsp`;
+      if (config.unit === 'g') return `${value} g`;
+      if (config.unit === 'scoop') return `${formatFraction(value)} ${config.label || 'scoop'}${value === 1 ? '' : 's'}`;
+      if (config.unit === 'item') return `${formatFraction(value)} ${config.label || 'item'}`;
+      return `${value}`;
+    }
+
+    function adjustAmount(id, direction) {
+      const config = amountConfig(id);
+      const step = amountStep(id);
+      const next = Math.max(config.min ?? 0, Math.min(config.max ?? 99, amountValue(id) + direction * step));
+      state.amounts[amountKey(id)] = Math.round(next * 10000) / 10000;
+      renderBubbles();
+      renderAmountSuggestions();
+    }
+
+    function setSmoothieSize(size) {
+      state.hasBlended = false;
+      state.smoothieSize = Number(size);
+      renderSizeControls();
+      renderBubbles();
+      renderAmountSuggestions();
+    }
+
+    function renderSizeControls() {
+      document.querySelectorAll('.size-tab').forEach(button => {
+        const active = Number(button.dataset.size) === state.smoothieSize;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', String(active));
+        button.setAttribute('aria-label', `${button.dataset.size} ounce smoothie`);
+      });
+      const sizeHint = document.getElementById('sizeHint');
+      if (sizeHint) sizeHint.textContent = `${state.smoothieSize} oz smoothie`;
+    }
+
+    function renderAmountSuggestions() {
+      const list = document.getElementById('amountSuggestions');
+      if (!list) return;
+      if (!state.selected.length) {
+        list.innerHTML = '<p class="amount-empty">Add ingredients to see a recipe-style amount list.</p>';
+        return;
+      }
+      list.innerHTML = state.selected.map(id => {
+        const config = amountConfig(id);
+        const value = amountValue(id);
+        const atMin = value <= (config.min ?? 0);
+        const atMax = value >= (config.max ?? 99);
+        return `<div class="amount-row">
+          <span class="amount-name">${byId[id]?.name || id}${config.note ? `<span class="amount-note">${config.note}</span>` : ''}</span>
+          <span class="amount-control">
+            <button class="amount-stepper" type="button" data-amount-id="${id}" data-delta="-1" ${atMin ? 'disabled' : ''} aria-label="Decrease ${byId[id]?.name || id}">−</button>
+            <span class="amount-value">${formatAmount(id)}</span>
+            <button class="amount-stepper" type="button" data-amount-id="${id}" data-delta="1" ${atMax ? 'disabled' : ''} aria-label="Increase ${byId[id]?.name || id}">+</button>
+          </span>
+        </div>`;
+      }).join('');
+      list.querySelectorAll('[data-amount-id]').forEach(button => {
+        button.addEventListener('click', () => adjustAmount(button.dataset.amountId, Number(button.dataset.delta)));
+      });
+    }
+
+    function setSmoothieFace(score) {
+      const mouth = document.getElementById('smoothieMouth');
+      if (!mouth) return;
+      if (score > 90) {
+        mouth.setAttribute('d', 'M73 141c4 9 25 9 30 0');
+      } else if (score >= 70) {
+        mouth.setAttribute('d', 'M75 143h28');
+      } else {
+        mouth.setAttribute('d', 'M73 149c4-8 25-8 30 0');
+      }
+    }
+
+    function averageScore(result) {
+      return Math.round((result.texture + result.satiety + result.flavor) / 3);
+    }
+
     function renderBubbles() {
       const layer = document.getElementById('bubbleLayer');
-      layer.innerHTML = state.slots.map((id, index) => {
+      const bubbleMarkup = state.slots.map((id, index) => {
         const item = id ? byId[id] : null;
         return `<button class="bubble ${item ? 'is-selected' : 'is-empty'}" data-slot="${index}" type="button" aria-label="${item ? `Change ${item.name}` : 'Choose ingredient'}">
           ${item ? ingredientIcon(id) : emptyIcon()}
@@ -550,6 +1012,19 @@
           <span class="bubble-name">${item ? item.name : 'Add'}</span>
         </button>`;
       }).join('');
+      const amountMarkup = state.slots.map((id, index) => {
+        if (!id) return '';
+        const config = amountConfig(id);
+        const value = amountValue(id);
+        const atMin = value <= (config.min ?? 0);
+        const atMax = value >= (config.max ?? 99);
+        return `<div class="bubble-amount-chip" data-slot="${index}" aria-label="Amount for ${byId[id]?.name || id}">
+          <button class="bubble-amount-button" type="button" data-bubble-amount-id="${id}" data-delta="-1" ${atMin ? 'disabled' : ''} aria-label="Decrease ${byId[id]?.name || id}">−</button>
+          <span class="bubble-amount-value">${formatAmount(id)}</span>
+          <button class="bubble-amount-button" type="button" data-bubble-amount-id="${id}" data-delta="1" ${atMax ? 'disabled' : ''} aria-label="Increase ${byId[id]?.name || id}">+</button>
+        </div>`;
+      }).join('');
+      layer.innerHTML = bubbleMarkup + amountMarkup;
       layer.querySelectorAll('.bubble').forEach(button => {
         button.addEventListener('click', () => {
           openPicker(Number(button.dataset.slot));
@@ -561,6 +1036,12 @@
           event.stopPropagation();
           removeIngredient(button.dataset.remove);
           renderFeedback(evaluateSmoothie());
+        });
+      });
+      layer.querySelectorAll('[data-bubble-amount-id]').forEach(button => {
+        button.addEventListener('click', event => {
+          event.stopPropagation();
+          adjustAmount(button.dataset.bubbleAmountId, Number(button.dataset.delta));
         });
       });
     }
@@ -710,15 +1191,25 @@
       };
     }
 
+    function shortRecommendation(text) {
+      if (/liquid base/i.test(text)) return 'Add liquid.';
+      if (/Add fruit/i.test(text)) return 'Add fruit.';
+      if (/Greek yogurt|banana|avocado|peanut butter/i.test(text)) return 'Add creaminess.';
+      if (/protein/i.test(text)) return 'Add protein.';
+      if (/chia|flax|fat|fiber/i.test(text)) return 'Add fiber or fat.';
+      if (/sweet|Honey/i.test(text)) return 'Balance sweetness.';
+      return 'Good balance.';
+    }
+
     function renderFeedback(result = null) {
       const feedback = result || evaluateSmoothie();
       document.getElementById('feedbackTitle').textContent = feedback.title;
-      document.getElementById('feedbackSummary').textContent = feedback.summary;
-      document.getElementById('textureScore').textContent = `${scoreLabel(feedback.texture)} ${feedback.texture}`;
-      document.getElementById('satietyScore').textContent = `${scoreLabel(feedback.satiety)} ${feedback.satiety}`;
-      document.getElementById('flavorScore').textContent = `${scoreLabel(feedback.flavor)} ${feedback.flavor}`;
-      document.getElementById('tags').innerHTML = feedback.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
-      document.getElementById('recommendationText').textContent = feedback.recommendation;
+      document.getElementById('feedbackSummary').textContent = state.hasBlended ? 'Texture · satiety · flavor' : 'Blend to score.';
+      document.getElementById('textureScore').textContent = `${feedback.texture}`;
+      document.getElementById('satietyScore').textContent = `${feedback.satiety}`;
+      document.getElementById('flavorScore').textContent = `${feedback.flavor}`;
+      document.getElementById('tags').innerHTML = feedback.tags.slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('');
+      document.getElementById('recommendationText').textContent = shortRecommendation(feedback.recommendation);
       const button = document.getElementById('recommendationButton');
       if (feedback.suggestion && !state.selected.includes(feedback.suggestion)) {
         button.hidden = false;
@@ -729,13 +1220,69 @@
         button.textContent = 'Nice blend';
         button.dataset.add = '';
       }
+      const compactScore = document.getElementById('compactScore');
+      const overallValue = document.getElementById('overallScoreValue');
+      const overall = averageScore(feedback);
+      compactScore.classList.toggle('is-visible', Boolean(state.hasBlended));
+      overallValue.textContent = `${overall}`;
       updateSmoothieColor();
+      renderAmountSuggestions();
     }
 
     function updateSmoothieColor() {
       const fill = document.getElementById('smoothieFill');
       const items = state.selected.map(id => byId[id]);
       fill.setAttribute('fill', items.length ? items[items.length - 1].color : '#f47f8b');
+    }
+
+
+
+    function amountSnapshotFor(ids, size = state.smoothieSize) {
+      const snapshot = {};
+      ids.forEach(id => {
+        const key = `${size}:${id}`;
+        snapshot[id] = state.amounts[key] ?? (amountDefaults[id]?.bySize?.[size] ?? amountDefaults[id]?.bySize?.[16] ?? 1);
+      });
+      return snapshot;
+    }
+
+    function formatAmountFromSnapshot(id, value) {
+      const config = amountConfig(id);
+      if (config.unit === 'cup') return `${formatFraction(value)} cup${value === 1 ? '' : 's'}`;
+      if (config.unit === 'tsp') return `${formatFraction(value)} tsp`;
+      if (config.unit === 'g') return `${value} g`;
+      if (config.unit === 'scoop') return `${formatFraction(value)} ${config.label || 'scoop'}${value === 1 ? '' : 's'}`;
+      if (config.unit === 'item') return `${formatFraction(value)} ${config.label || 'item'}`;
+      return `${value}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    }
+
+    function defaultRecipeTitle(ids) {
+      const selected = ids.filter(id => byId[id]);
+      const fruit = selected.find(id => byId[id].roles.includes('fruit'));
+      const protein = selected.find(id => byId[id].roles.includes('protein') && id !== fruit);
+      if (fruit && protein) return `${byId[fruit].name} ${byId[protein].name} Smoothie`;
+      if (fruit) return `${byId[fruit].name} Smoothie`;
+      return 'Custom Smoothie';
+    }
+
+    function updateHistoryTitle(entryId, title) {
+      const entry = state.history.find(item => item.id === entryId);
+      if (!entry) return;
+      entry.title = title.trim() || defaultRecipeTitle(entry.ingredients || []);
+      setSavedHistory(state.history);
+    }
+
+    function markScoreUpdated() {
+      const compactScore = document.getElementById('compactScore');
+      if (!compactScore) return;
+      compactScore.classList.remove('is-updated');
+      void compactScore.offsetWidth;
+      compactScore.classList.add('is-updated');
+      window.setTimeout(() => compactScore.classList.remove('is-updated'), 1200);
     }
 
     function saveBlend() {
@@ -746,7 +1293,9 @@
         id: Date.now(),
         date: new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
         ingredients: ids,
-        title: result.title,
+        sizeOz: state.smoothieSize,
+        amounts: amountSnapshotFor(ids, state.smoothieSize),
+        title: defaultRecipeTitle(ids),
         score: Math.round((result.texture + result.satiety + result.flavor) / 3)
       };
       state.history = [entry, ...state.history].slice(0, 12);
@@ -764,26 +1313,81 @@
         return;
       }
       list.innerHTML = state.history.map(entry => {
-        const names = entry.ingredients.map(id => byId[id]?.name || id).join(', ');
-        return `<article class="history-card">
-          <div class="history-top"><h3 class="history-title">${entry.title} · ${entry.score}</h3><span class="history-date">${entry.date}</span></div>
-          <p class="history-ingredients">${names}</p>
+        const size = entry.sizeOz || 16;
+        const savedAmounts = entry.amounts || {};
+        const lines = entry.ingredients.filter(id => byId[id]).map(id => {
+          const rawValue = savedAmounts[id] ?? savedAmounts[`${size}:${id}`] ?? (amountDefaults[id]?.bySize?.[size] ?? amountDefaults[id]?.bySize?.[16] ?? 1);
+          return `<li class="recipe-line"><span class="recipe-line-name">${byId[id]?.name || id}</span><span class="recipe-line-amount">${formatAmountFromSnapshot(id, rawValue)}</span></li>`;
+        }).join('');
+        const title = entry.title || defaultRecipeTitle(entry.ingredients || []);
+        return `<article class="recipe-card">
+          <div class="recipe-card-top">
+            <div>
+              <input class="recipe-title-input" type="text" value="${escapeHtml(title)}" data-title-id="${entry.id}" aria-label="Recipe title">
+              <div class="recipe-card-meta">${size} oz · ${entry.ingredients.length} ingredients</div>
+            </div>
+            <div class="recipe-score" aria-label="Smoothie score ${entry.score}">${entry.score}</div>
+          </div>
+          <ul class="recipe-lines">${lines}</ul>
+          <div class="recipe-card-actions"><span class="recipe-card-date">${entry.date}</span><button class="load-button" type="button" data-load="${entry.id}">Load recipe</button></div>
         </article>`;
       }).join('');
+      list.querySelectorAll('[data-load]').forEach(button => button.addEventListener('click', () => loadSavedBlend(Number(button.dataset.load))));
+      list.querySelectorAll('[data-title-id]').forEach(input => {
+        input.addEventListener('change', () => updateHistoryTitle(Number(input.dataset.titleId), input.value));
+        input.addEventListener('keydown', event => {
+          if (event.key === 'Enter') input.blur();
+        });
+      });
+    }
+
+
+    function loadSavedBlend(entryId) {
+      const entry = state.history.find(item => item.id === entryId);
+      if (!entry) return;
+      state.selected = entry.ingredients.filter(id => byId[id]);
+      state.smoothieSize = entry.sizeOz || state.smoothieSize || 16;
+      state.amounts = {};
+      const savedAmounts = entry.amounts || {};
+      Object.entries(savedAmounts).forEach(([key, value]) => {
+        if (key.includes(':')) state.amounts[key] = value;
+        else state.amounts[`${state.smoothieSize}:${key}`] = value;
+      });
+      state.hasBlended = false;
+      closePicker();
+      render();
+      renderFeedback(evaluateSmoothie());
+      document.querySelector('.hero').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function render() {
       renderBubbles();
       renderRail();
       renderHistory();
+      renderSizeControls();
+      renderAmountSuggestions();
       updateSmoothieColor();
     }
 
-    document.getElementById('blendButton').addEventListener('click', () => {
+    document.getElementById('blendButton').addEventListener('click', event => {
+      const button = event.currentTarget;
+      const blender = document.querySelector('.blender');
       const result = evaluateSmoothie();
-      renderFeedback(result);
-      const feedback = document.getElementById('feedback');
-      feedback.animate([{ borderColor: '#e9e2d8' }, { borderColor: '#ff5f73' }, { borderColor: '#e9e2d8' }], { duration: 600, easing: 'ease-out' });
+      button.disabled = true;
+      button.querySelector('span').textContent = 'Blending...';
+      blender.classList.add('is-blending');
+
+      window.setTimeout(() => {
+        blender.classList.remove('is-blending');
+        button.disabled = false;
+        button.querySelector('span').textContent = 'Blend';
+        state.hasBlended = true;
+        renderFeedback(result);
+        setSmoothieFace(averageScore(result));
+        markScoreUpdated();
+        const feedback = document.getElementById('feedback');
+        feedback.animate([{ borderColor: '#e9e2d8' }, { borderColor: '#ff5f73' }, { borderColor: '#e9e2d8' }], { duration: 600, easing: 'ease-out' });
+      }, 1700);
     });
 
     document.getElementById('recommendationButton').addEventListener('click', event => {
@@ -792,11 +1396,12 @@
     });
 
     document.getElementById('saveBlendButton').addEventListener('click', saveBlend);
+    document.querySelectorAll('.size-tab').forEach(button => button.addEventListener('click', () => setSmoothieSize(button.dataset.size)));
 
     render();
     renderFeedback({
       title: 'Build your smoothie',
-      summary: 'Add ingredients, then blend for a balance check.',
+      summary: 'Blend to score.',
       texture: 0,
       satiety: 0,
       flavor: 0,
